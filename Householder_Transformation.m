@@ -9,7 +9,7 @@ close all;
 A = [1 1 0; 1 0 1; 0 1 1]; % This is our example, same as worked in class
 
 % Our method using householder transformations
-[Q, R, H] = hqr(A);
+[Q, R] = hqr(A);
 
 % what it should be (signs are insignificant for householder)
 [Q1, R1] = qr(A);
@@ -38,7 +38,7 @@ else
 end
 
 %% Functions
-function [Q, R, H] = hqr(A) % Our function to do QR decomposition
+function [Q, R] = hqr(A) % Our function to do QR decomposition
     [n,p] = size(A);
     m = min(n,p);
 
@@ -63,9 +63,16 @@ function [Q, R, H] = hqr(A) % Our function to do QR decomposition
         Hk = eye(n-k+1) - 2 * (v * v');
         H = eye(n);
         H(k:n, k:n) = Hk;
-    
+
         % applying householder transformation
         R = H*R;
         Q = Q*H';
+    end
+
+    % Testing properties of householder: Hermitian, Unitary,
+    % Involutory, and determinant is equal to +1 or -1 due to sign
+    % issues within MATLAB.
+    if isequal(H, H') & isequal(inv(H), H') & isequal(H, inv(H)) & abs(det(H)) == 1
+        fprintf('A valid householder matrix was produced.\n');
     end
 end
